@@ -180,6 +180,17 @@ body {
   box-sizing: border-box;
   overflow: visible;
 }
+.text-task-measurement {
+  position: fixed;
+  left: -100000px;
+  top: 0;
+  width: 210mm;
+  visibility: hidden;
+  pointer-events: none;
+}
+.text-task-measurement .a4-page {
+  zoom: 1;
+}
 @media screen and (min-width: 1024px) {
   .print-area {
     position: sticky;
@@ -701,13 +712,11 @@ body {
   .a4-page {
     page: portrait-sheet;
     width: 210mm !important;
-    min-height: 297mm !important;
-    height: auto !important;
-    max-height: none !important;
+    min-height: 0 !important;
+    height: 297mm !important;
     margin: 0 !important;
-    overflow: visible;
+    overflow: hidden;
     box-shadow: none;
-    break-inside: auto;
     break-after: page;
     page-break-after: always;
   }

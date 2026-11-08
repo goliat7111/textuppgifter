@@ -19,4 +19,18 @@ describe("utökade textuppgifter", () => {
     expect(paginateTaskItems([1, 2, 3, 4], [100, 100, 100, 100], 500, 16)).toEqual([[1, 2, 3, 4]]);
     expect(paginateTaskItems([], [], 500, 16)).toEqual([]);
   });
+
+  it("uses the available space including gaps and keeps every task in order", () => {
+    const tasks = [1, 2, 3, 4, 5, 6];
+    expect(paginateTaskItems(tasks, [40, 40, 40, 40, 40, 40], 290, 10)).toEqual([tasks]);
+    expect(paginateTaskItems(tasks, [40, 40, 40, 40, 40, 41], 290, 10)).toEqual([
+      [1, 2, 3, 4, 5],
+      [6],
+    ]);
+    expect(paginateTaskItems(tasks, [100, 30, 200, 30, 30, 30], 250, 10)).toEqual([
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]);
+  });
 });

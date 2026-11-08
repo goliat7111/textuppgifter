@@ -6,7 +6,7 @@ import {
 } from "@/lib/textuppgifter-focus";
 import { PdfPagesPreview } from "@/components/PdfPagesPreview";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FileDown, Printer, Wand2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { PrintContentChoice } from "@/components/PrintContentChoice";
@@ -15,6 +15,7 @@ import { SheetHeader } from "@/components/SheetHeader";
 import { ZoomControls } from "@/components/ZoomControls";
 import { useSheetZoom } from "@/hooks/use-sheet-zoom";
 import { generateTextTasks, type TextTask } from "@/lib/textuppgifter.functions";
+import { paginateTaskItems } from "@/lib/textuppgifter-extra";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -56,6 +57,7 @@ export function Sheet({
   startIndex,
   total,
   titlePrefix = "Textuppgifter",
+  measurement = false,
 }: {
   tasks: TextTask[];
   answers: boolean;
@@ -65,9 +67,10 @@ export function Sheet({
   startIndex: number;
   total: number;
   titlePrefix?: string;
+  measurement?: boolean;
 }) {
   return (
-    <div className="a4-page text-task-page">
+    <div className={`a4-page text-task-page${measurement ? " measurement-page" : ""}`}>
       <SheetHeader
         title={answers ? `${titlePrefix} – Facit` : titlePrefix}
         subtitle={`Åk ${grade} · ${opLabel} · ${theme}`}
@@ -93,6 +96,98 @@ export function Sheet({
         ))}
       </ol>
     </div>
+  );
+}
+
+type PageStatus = { signature: string; error: string };
+type SheetProps = React.ComponentProps<typeof Sheet>;
+
+function PaginatedSheets({
+  signature,
+  onStatus,
+  ...props
+}: SheetProps & {
+  signature: string;
+  onStatus: (status: PageStatus) => void;
+}) {
+  const measurementRef = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<{ signature: string; pages: TextTask[][] }>({
+    signature: "",
+    pages: [],
+  });
+
+  useLayoutEffect(() => {
+    const page = measurementRef.current?.querySelector<HTMLElement>(".measurement-page");
+    const list = page?.querySelector<HTMLOListElement>("ol");
+    if (!page || !list) return;
+    let active = true;
+    const measure = () => {
+      if (!active || window.matchMedia("print").matches) return;
+      const pageRect = page.getBoundingClientRect();
+      const listRect = list.getBoundingClientRect();
+      const pageStyle = getComputedStyle(page);
+      const listStyle = getComputedStyle(list);
+      const items = Array.from(list.children);
+      const heights = items.map((item) => item.getBoundingClientRect().height);
+      const availableHeight =
+        (pageRect.width * 297) / 210 -
+        (listRect.top - pageRect.top) -
+        parseFloat(pageStyle.paddingBottom) -
+        1;
+      const gap = parseFloat(listStyle.rowGap) || 0;
+      if (
+        availableHeight <= 0 ||
+        heights.length !== props.tasks.length ||
+        heights.some((height) => height <= 0)
+      ) {
+        setLayout({ signature, pages: [] });
+        onStatus({ signature, error: "Sidindelningen kunde inte beräknas. Försök igen." });
+        return;
+      }
+      if (heights.some((height) => height > availableHeight)) {
+        setLayout({ signature, pages: [] });
+        onStatus({
+          signature,
+          error: "En uppgift är för lång för att rymmas på en sida. Ta bort eller förkorta den.",
+        });
+        return;
+      }
+      const pages = paginateTaskItems(props.tasks, heights, availableHeight, gap);
+      setLayout((current) =>
+        current.signature === signature &&
+        current.pages.map((part) => part.length).join(",") ===
+          pages.map((part) => part.length).join(",")
+          ? current
+          : { signature, pages },
+      );
+      onStatus({ signature, error: "" });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(list);
+    if (page.firstElementChild) observer.observe(page.firstElementChild);
+    document.fonts.ready.then(measure);
+    document.fonts.addEventListener("loadingdone", measure);
+    return () => {
+      active = false;
+      observer.disconnect();
+      document.fonts.removeEventListener("loadingdone", measure);
+    };
+  }, [signature, onStatus, props.tasks]);
+
+  let startIndex = 0;
+  return (
+    <>
+      <div ref={measurementRef} className="text-task-measurement no-print" aria-hidden="true">
+        <Sheet {...props} measurement />
+      </div>
+      {layout.signature === signature &&
+        layout.pages.map((page, index) => {
+          const firstIndex = startIndex;
+          startIndex += page.length;
+          return <Sheet key={index} {...props} tasks={page} startIndex={firstIndex} />;
+        })}
+    </>
   );
 }
 
@@ -137,6 +232,22 @@ function TextuppgifterPage() {
   const activeMeta = manualMode
     ? { ...manualMeta, grade: manualGrade, theme: manualTheme.trim() }
     : meta;
+  const [sheetStatus, setSheetStatus] = useState<PageStatus>({ signature: "", error: "" });
+  const [keyStatus, setKeyStatus] = useState<PageStatus>({ signature: "", error: "" });
+  const updateSheetStatus = useCallback(
+    (status: PageStatus) =>
+      setSheetStatus((current) =>
+        current.signature === status.signature && current.error === status.error ? current : status,
+      ),
+    [],
+  );
+  const updateKeyStatus = useCallback(
+    (status: PageStatus) =>
+      setKeyStatus((current) =>
+        current.signature === status.signature && current.error === status.error ? current : status,
+      ),
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [exporting, setExporting] = useState(false);
@@ -194,6 +305,23 @@ function TextuppgifterPage() {
         ? GEOMETRY_AREAS[meta.geometry]
         : FOCUS_AREAS[meta.focus];
   const activeOpLabel = manualMode ? "Egna uppgifter" : opLabel;
+  const layoutSignature = JSON.stringify([
+    activeTasks,
+    activeMeta.grade,
+    activeMeta.theme,
+    activeOpLabel,
+    manualMode,
+  ]);
+  const statuses = [
+    ...(showSheet(content) ? [sheetStatus] : []),
+    ...(showKey(content) ? [keyStatus] : []),
+  ];
+  const layoutReady = statuses.every(
+    (status) => status.signature === layoutSignature && !status.error,
+  );
+  const layoutError = statuses.find(
+    (status) => status.signature === layoutSignature && status.error,
+  )?.error;
   const addManualTask = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const question = draftQuestion.trim();
@@ -552,11 +680,16 @@ function TextuppgifterPage() {
               {error}
             </p>
           )}
+          {layoutError && activeTasks.length > 0 && (
+            <p role="alert" className="text-sm text-destructive">
+              {layoutError}
+            </p>
+          )}
           <PrintContentChoice value={content} onChange={setContent} />
           <ZoomControls zoom={zoom} setZoom={setZoom} zoomStep={zoomStep} />
           <div className="space-y-2">
             <button
-              disabled={exporting || !activeTasks.length}
+              disabled={exporting || !activeTasks.length || !layoutReady}
               onClick={downloadPdf}
               className="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium hover:bg-accent disabled:opacity-60"
             >
@@ -564,7 +697,7 @@ function TextuppgifterPage() {
               {exporting ? "Skapar förhandsgranskning…" : "Förhandsgranska & ladda ner PDF"}
             </button>
             <button
-              disabled={!activeTasks.length}
+              disabled={!activeTasks.length || !layoutReady}
               onClick={() => window.print()}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
             >
@@ -586,7 +719,9 @@ function TextuppgifterPage() {
           {activeTasks.length > 0 && (
             <>
               {showSheet(content) && (
-                <Sheet
+                <PaginatedSheets
+                  signature={layoutSignature}
+                  onStatus={updateSheetStatus}
                   tasks={activeTasks}
                   answers={false}
                   {...activeMeta}
@@ -597,7 +732,9 @@ function TextuppgifterPage() {
                 />
               )}
               {showKey(content) && (
-                <Sheet
+                <PaginatedSheets
+                  signature={layoutSignature}
+                  onStatus={updateKeyStatus}
                   tasks={activeTasks}
                   answers
                   {...activeMeta}
