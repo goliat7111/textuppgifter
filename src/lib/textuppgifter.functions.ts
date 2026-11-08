@@ -18,8 +18,8 @@ const Input = z.object({
   tableMin: z.number().int().min(0).max(12),
   tableMax: z.number().int().min(0).max(12),
   theme: z.string().trim().min(1).max(80),
-  count: z.number().int().min(4).max(10),
-  op: z.enum(["add", "sub", "mul", "div", "all"]).default("mul"),
+  count: z.number().int().min(3).max(12),
+  op: z.enum(["add", "sub", "mul", "div", "all"]).default("all"),
   maxNumber: z.number().int().min(10).max(100000).default(100),
   extendedText: z.boolean().default(false),
 });
