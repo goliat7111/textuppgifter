@@ -26,8 +26,14 @@ describe("utökade textuppgifter", () => {
     expect(new Set(instructions).size).toBe(4);
     expect(instructions[0]).toContain("Nivå 1 – lätt");
     expect(instructions[3]).toContain("Nivå 4 – avancerad");
+    expect(instructions[3]).toContain("minst två relevanta ledtrådar från olika delar av texten");
+    expect(instructions[3]).toContain(
+      "inte kräva specialkunskap, gissningar eller outtalade antaganden",
+    );
     for (const instruction of instructions) {
       expect(instruction).toContain("inte årskursen eller matematikens svårighet");
+      expect(instruction).toContain("Kvalitetsgranska varje uppgift innan du svarar");
+      expect(instruction).toContain("Bearbeta uppgifter som inte klarar kontrollerna");
     }
   });
 

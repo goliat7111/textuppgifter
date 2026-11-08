@@ -4,14 +4,15 @@ export const EXTENDED_ANSWER_MAX_LENGTH = 200;
 export type ReadingLevel = 1 | 2 | 3 | 4;
 
 const READING_LEVEL_INSTRUCTIONS: Record<ReadingLevel, string> = {
-  1: "Nivå 1 – lätt: Använd mycket korta, raka meningar och vanliga ord. Skriv ut den information som behövs tydligt och nära frågan; eleven ska främst förstå texten och hitta uppgiftens tal.",
-  2: "Nivå 2 – grund: Använd vardagliga ord och korta, sammanhängande meningar. Eleven får hitta den viktiga informationen i texten och förstå en enkel koppling mellan händelse och fråga.",
-  3: "Nivå 3 – utmanande: Variera meningsbyggnaden och använd några mindre vanliga men begripliga ord. Eleven får koppla ihop information från olika delar av texten och skilja viktig information från bakgrundsdetaljer.",
-  4: "Nivå 4 – avancerad: Använd ett rikare ordförråd och mer varierad meningsbyggnad, fortfarande begriplig för vald årskurs. Eleven får dra en enkel slutsats eller kombinera ledtrådar från flera delar av texten. Håll frågan tydlig och lösbar utan gissningar.",
+  1: "Nivå 1 – lätt: Använd mycket korta, raka meningar och vanliga ord. Skriv ut den information som behövs tydligt och nära frågan. Eleven ska främst förstå texten och hitta uppgiftens tal.",
+  2: "Nivå 2 – grund: Använd vardagliga ord och korta, sammanhängande meningar. Eleven ska hitta den viktiga informationen och förstå en enkel koppling mellan händelse och fråga.",
+  3: "Nivå 3 – utmanande: Variera meningsbyggnaden och använd några mindre vanliga men begripliga ord. Eleven ska koppla ihop information från olika delar av texten och skilja viktig information från bakgrundsdetaljer.",
+  4: "Nivå 4 – avancerad läsförståelse: Gör läsutmaningen tydligt större än på nivå 3 genom textens uppbyggnad, inte bara svårare ord. Använd en sammanhängande berättelse med varierad meningsbyggnad och ett rikt men åldersanpassat ordförråd. Eleven ska behöva koppla ihop minst två relevanta ledtrådar från olika delar av texten och dra en rimlig slutsats utifrån det som faktiskt står. Variera hur ledtrådarna uttrycks och placeras mellan uppgifterna; undvik att alltid lägga dem i samma ordning eller precis intill frågan. Slutsatsen ska vara nödvändig för att förstå situationen eller vad frågan efterfrågar, men får inte kräva specialkunskap, gissningar eller outtalade antaganden. Håll själva matematiken på vald årskursnivå och lösningen entydig.",
 };
 
 export function readingComprehensionInstructions(level: ReadingLevel): string {
-  return `Läsförståelse: ${READING_LEVEL_INSTRUCTIONS[level]} Denna nivå styr endast textens språkliga och läsmässiga svårighet, inte årskursen eller matematikens svårighet.`;
+  return `Läsförståelse: ${READING_LEVEL_INSTRUCTIONS[level]} Denna nivå styr endast textens språkliga och läsmässiga svårighet, inte årskursen eller matematikens svårighet.
+Kvalitetsgranska varje uppgift innan du svarar. Kontrollera att texten hänger ihop, att frågan går att besvara med informationen i texten, att läsutmaningen motsvarar vald nivå och att ingen viktig information saknas eller motsäger något annat. På nivå 3–4 ska eleven behöva läsa och koppla ihop information; gör inte uppgiften svår genom otydlighet. Kontrollera också att räknesätt, uträkning och svar stämmer. Bearbeta uppgifter som inte klarar kontrollerna. Svara endast med de färdiga uppgifterna, inte med granskningen.`;
 }
 
 export function textTaskInstructions(extendedText: boolean): string {

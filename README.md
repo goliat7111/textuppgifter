@@ -5,7 +5,8 @@ uppgifter, med elevblad och facit för utskrift eller PDF. Årskurs, fokusområd
 tema och antal uppgifter kan anpassas. Med **Utökad text** får AI-uppgifterna
 sammanhängande berättelser där eleverna får öva på att välja vilken information
 som behövs för att lösa uppgiften. Läsförståelsens svårighetsgrad kan väljas
-separat från årskursen på en fyrgradig skala. Läs alltid igenom AI-genererade
+separat från årskursen på en fyrgradig skala; AI:n ombeds även granska att
+uppgifterna är tydliga, lösbara och anpassade till vald nivå. Läs alltid igenom AI-genererade
 uppgifter och facit före utskrift.
 
 ## Lovable
