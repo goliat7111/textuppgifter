@@ -3,7 +3,8 @@
 Fristående app för att skapa svenska textuppgifter med AI eller lägga in egna
 uppgifter, med elevblad och facit för utskrift eller PDF. Årskurs, fokusområde,
 tema och antal uppgifter kan anpassas. Med **Utökad text** får AI-uppgifterna
-även tal som inte behövs för lösningen. Läs alltid igenom AI-genererade
+sammanhängande berättelser där eleverna får öva på att välja vilken information
+som behövs för att lösa uppgiften. Läs alltid igenom AI-genererade
 uppgifter och facit före utskrift.
 
 ## Lovable

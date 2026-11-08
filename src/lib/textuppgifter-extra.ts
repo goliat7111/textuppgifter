@@ -6,7 +6,7 @@ export function textTaskInstructions(extendedText: boolean): string {
     return "Anpassa språk, meningslängd och svårighet till årskursen. Öka svårigheten något genom bladet. Max 3 meningar per uppgift. Svaren ska vara korrekta och kontrollerade.";
   }
   return `Anpassa språk, meningslängd och svårighet till årskursen. Öka svårigheten något genom bladet.
-Varje uppgift ska innehålla minst ett extra tal som är relevant för berättelsen men inte behövs för att besvara frågan. Skriv talet med siffror och väv in det naturligt i texten utan att avslöja att det är överflödigt. Alla nödvändiga tal och villkor ska fortfarande finnas med. Det extra talet får inte ändra svaret, skapa motsägelser eller göra frågan tvetydig. Använd inte det extra talet i facit eller uträkningen.
+Skriv varje uppgift som en kort, sammanhängande berättelse om en tydlig situation kopplad till temat. Alla personer, händelser och detaljer ska höra ihop och vara rimliga; lägg inte till lösryckta fakta eller slumpmässiga tal. Ta med minst ett tal som passar naturligt in i situationen men inte behövs för svaret. Eleven ska behöva läsa och välja ut informationen som faktiskt behövs. Formulera en tydlig fråga och se till att alla nödvändiga tal och villkor finns med. Den extra detaljen får inte ändra svaret, skapa motsägelser eller göra frågan tvetydig. Använd inte det extra talet i facit eller uträkningen.
 Max 3 meningar och ${EXTENDED_QUESTION_MAX_LENGTH} tecken per uppgift, inklusive frågan. Svaret med uträkning får vara högst ${EXTENDED_ANSWER_MAX_LENGTH} tecken. Svaren ska vara korrekta och kontrollerade.`;
 }
 

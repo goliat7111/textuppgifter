@@ -200,7 +200,7 @@ function TextuppgifterPage() {
   const [count, setCount] = useState(6);
   const [geometry, setGeometry] = useState<GeometryArea>("plane");
   const [focus, setFocus] = useState<FocusArea>("arithmetic");
-  const [op, setOp] = useState<Op>("mul");
+  const [op, setOp] = useState<Op>("all");
   const [maxNumber, setMaxNumber] = useState(100);
   const [extendedText, setExtendedText] = useState(false);
   const [content, setContent] = useState<PrintContent>("sheet");
@@ -209,7 +209,7 @@ function TextuppgifterPage() {
   const [meta, setMeta] = useState({
     grade: 5,
     theme: "",
-    op: "mul" as Op,
+    op: "all" as Op,
     focus: "arithmetic" as FocusArea,
     geometry: "plane" as GeometryArea,
     extendedText: false,
@@ -547,7 +547,7 @@ function TextuppgifterPage() {
                   value={count}
                   onChange={(e) => setCount(Number(e.target.value))}
                 >
-                  {[4, 5, 6, 7, 8, 10].map((n) => (
+                  {Array.from({ length: 10 }, (_, index) => index + 3).map((n) => (
                     <option key={n} value={n}>
                       {n}
                     </option>
@@ -564,8 +564,8 @@ function TextuppgifterPage() {
                   Utökad text
                 </button>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Lägg till tal som inte behövs för att lösa uppgiften. Skapa nya uppgifter för att
-                  använda valet.
+                  Skapa sammanhängande berättelser med någon extra detalj. Eleven får träna på att
+                  hitta informationen som behövs. Skapa nya uppgifter för att använda valet.
                 </p>
               </div>
               <button

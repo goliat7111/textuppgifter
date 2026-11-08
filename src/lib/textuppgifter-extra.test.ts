@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 import { paginateTaskItems, textTaskInstructions } from "./textuppgifter-extra";
 
 describe("utökade textuppgifter", () => {
-  it("only requests irrelevant numbers when the option is enabled", () => {
+  it("requests contextual extra details only when the option is enabled", () => {
     expect(textTaskInstructions(false)).not.toContain("extra tal");
     const instructions = textTaskInstructions(true);
-    expect(instructions).toContain("inte behövs för att besvara frågan");
+    expect(instructions).toContain("sammanhängande berättelse");
+    expect(instructions).toContain("lägg inte till lösryckta fakta eller slumpmässiga tal");
+    expect(instructions).toContain("inte behövs för svaret");
+    expect(instructions).toContain("välja ut informationen som faktiskt behövs");
     expect(instructions).toContain("får inte ändra svaret");
     expect(instructions).toContain("inte det extra talet i facit");
     expect(instructions).toContain("300 tecken");
