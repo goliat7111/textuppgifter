@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { paginateTaskItems, textTaskInstructions } from "./textuppgifter-extra";
+import {
+  paginateTaskItems,
+  readingComprehensionInstructions,
+  textTaskInstructions,
+} from "./textuppgifter-extra";
 
 describe("utökade textuppgifter", () => {
   it("requests contextual extra details only when the option is enabled", () => {
@@ -9,9 +13,22 @@ describe("utökade textuppgifter", () => {
     expect(instructions).toContain("lägg inte till lösryckta fakta eller slumpmässiga tal");
     expect(instructions).toContain("inte behövs för svaret");
     expect(instructions).toContain("välja ut informationen som faktiskt behövs");
+    expect(instructions).toContain("ibland i början, ibland mitt i eller mot slutet");
+    expect(instructions).toContain("undvik att alltid lägga den i första meningen");
     expect(instructions).toContain("får inte ändra svaret");
     expect(instructions).toContain("inte det extra talet i facit");
     expect(instructions).toContain("300 tecken");
+  });
+
+  it("defines four reading-comprehension levels separately from grade and math difficulty", () => {
+    const instructions = ([1, 2, 3, 4] as const).map(readingComprehensionInstructions);
+
+    expect(new Set(instructions).size).toBe(4);
+    expect(instructions[0]).toContain("Nivå 1 – lätt");
+    expect(instructions[3]).toContain("Nivå 4 – avancerad");
+    for (const instruction of instructions) {
+      expect(instruction).toContain("inte årskursen eller matematikens svårighet");
+    }
   });
 
   it("paginates tasks by measured height rather than a fixed task count", () => {

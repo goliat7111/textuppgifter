@@ -2,6 +2,7 @@ import { FOCUS_PROMPTS, GEOMETRY_PROMPTS } from "./textuppgifter-focus";
 import {
   EXTENDED_ANSWER_MAX_LENGTH,
   EXTENDED_QUESTION_MAX_LENGTH,
+  readingComprehensionInstructions,
   textTaskInstructions,
 } from "./textuppgifter-extra";
 import { createServerFn } from "@tanstack/react-start";
@@ -15,6 +16,7 @@ const Input = z.object({
     .enum(["arithmetic", "algebra", "geometry", "probabilityStatistics", "combinatorics"])
     .default("arithmetic"),
   grade: z.number().int().min(1).max(9),
+  readingLevel: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).default(1),
   tableMin: z.number().int().min(0).max(12),
   tableMax: z.number().int().min(0).max(12),
   theme: z.string().trim().min(1).max(80),
@@ -48,6 +50,7 @@ export const generateTextTasks = createServerFn({ method: "POST" })
 Tema: ${data.theme}.
 ${data.focus === "arithmetic" ? OP_TEXT[data.op](lo, hi, data.maxNumber) : FOCUS_PROMPTS[data.focus]}
 ${data.focus === "geometry" ? GEOMETRY_PROMPTS[data.geometry] : ""}
+${readingComprehensionInstructions(data.readingLevel)}
 ${textTaskInstructions(data.extendedText)}
 Svara ENDAST med JSON: {"tasks":[{"question":"...","answer":"kort svar med enhet, t.ex. '24 äpplen' och uträkning i parentes, t.ex. '(6 · 4 = 24)', med rätt räknetecken (+, −, ·, /)"}]}`;
     const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {

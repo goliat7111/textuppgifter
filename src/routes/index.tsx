@@ -52,6 +52,7 @@ export function Sheet({
   tasks,
   answers,
   grade,
+  readingLevel,
   theme,
   opLabel,
   startIndex,
@@ -194,6 +195,7 @@ function PaginatedSheets({
 function TextuppgifterPage() {
   const gen = useServerFn(generateTextTasks);
   const [grade, setGrade] = useState(5);
+  const [readingLevel, setReadingLevel] = useState(1);
   const [tMin, setTMin] = useState("2");
   const [tMax, setTMax] = useState("9");
   const [theme, setTheme] = useState("");
@@ -568,6 +570,23 @@ function TextuppgifterPage() {
                   hitta informationen som behövs. Skapa nya uppgifter för att använda valet.
                 </p>
               </div>
+              <label className="block text-sm font-medium">
+                Läsförståelse
+                <select
+                  className={`${input} w-full`}
+                  value={readingLevel}
+                  onChange={(e) => setReadingLevel(Number(e.target.value))}
+                >
+                  <option value={1}>1 – Lätt</option>
+                  <option value={2}>2 – Grund</option>
+                  <option value={3}>3 – Utmanande</option>
+                  <option value={4}>4 – Avancerad</option>
+                </select>
+                <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                  Styr textens språk och hur informationen presenteras, inte årskursen eller
+                  matematikens svårighet.
+                </span>
+              </label>
               <button
                 type="submit"
                 disabled={loading}
