@@ -30,3 +30,4 @@ Se [Lovables dokumentation om AI](https://docs.lovable.dev/features/ai) och
 Installera Node.js och kör `npm ci`, följt av `npm run dev`. Utan en giltig
 serverkonfigurerad AI-anslutning kan sidan visas men uppgifter inte genereras.
 Kör `npm run build` för produktionsbygge och `npx vitest run` för tester.
+Test från VS Code 2026-11-08
